@@ -14,7 +14,7 @@ spec:
     spec:
       containers: 
         - name: auth
-          image: us.gcr.io/ticketing-dev-311118/auth
+          image: uomlms/auth
           env:
             # created secret with command kubectl create secret generic jwt-secret --from-literal=JWT_SECRET=<KEY>
             - name: JWT_SECRET
