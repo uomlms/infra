@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: courses-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: courses
+  template:
+    metadata:
+      labels:
+        app: courses
+    spec:
+      containers: 
+        - name: courses
+          image: uomlms/courses
+          env:
+            # created secret with command kubectl create secret generic jwt-secret --from-literal=JWT_SECRET=<KEY>
+            - name: JWT_SECRET
+              valueFrom: 
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET
+            - name: MONGO_URI
+              value: mongodb://courses-mongo-srv:27017/courses
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: courses-srv
+spec:
+  selector:
+    app: courses
+  ports:
+    - name: courses
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
