@@ -24,6 +24,11 @@ spec:
                   key: JWT_SECRET
             - name: MONGO_URI
               value: mongodb://courses-mongo-srv:27017/courses
+            - name: KAFKA_URL
+              value: kafka-srv:9092
+            - name: KAFKA_GROUP_ID
+              value: courses
+            
 ---
 apiVersion: v1
 kind: Service
