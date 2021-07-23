@@ -16,7 +16,7 @@ spec:
         - name: auth
           image: uomlms/auth
           env:
-            # created secret with command kubectl create secret generic jwt-secret --from-literal=JWT_SECRET=<KEY>
+            # kubectl create secret generic jwt-secret --from-literal=JWT_SECRET=<VALUE>
             - name: JWT_SECRET
               valueFrom: 
                 secretKeyRef:
