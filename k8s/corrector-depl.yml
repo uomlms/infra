@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: corrector-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: corrector
+  template:
+    metadata:
+      labels:
+        app: corrector
+    spec:
+      containers: 
+        - name: corrector
+          image: uomlms/corrector
+          env:
+            # created secret with command kubectl create secret generic jwt-secret --from-literal=JWT_SECRET=<KEY>
+            - name: JWT_SECRET
+              valueFrom: 
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET
+            # kubectl create secret generic aws-secret-access-key --from-literal=AWS_SECRET_ACCESS_KEY=<VALUE>
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom: 
+                secretKeyRef:
+                  name: aws-secret-access-key
+                  key: AWS_SECRET_ACCESS_KEY
+            # kubectl create secret generic aws-access-key-id --from-literal=AWS_ACCESS_KEY_ID=<VALUE>
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom: 
+                secretKeyRef:
+                  name: aws-access-key-id
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_BUCKET
+              value: uomlms
+            - name: KAFKA_URL
+              value: kafka-srv:9092
+            - name: KAFKA_GROUP_ID
+              value: corrector-group
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: corrector-srv
+spec:
+  selector:
+    app: corrector
+  ports:
+    - name: corrector
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
