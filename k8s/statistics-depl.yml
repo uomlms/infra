@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: statistics-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: statistics
+  template:
+    metadata:
+      labels:
+        app: statistics
+    spec:
+      containers: 
+        - name: statistics
+          image: uomlms/statistics
+          env:
+            # created secret with command kubectl create secret generic jwt-secret --from-literal=JWT_SECRET=<KEY>
+            - name: JWT_SECRET
+              valueFrom: 
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET
+            # kubectl create secret generic aws-secret-access-key --from-literal=AWS_SECRET_ACCESS_KEY=<VALUE>
+            - name: MONGO_URI
+              value: mongodb://statistics-mongo-srv:27017/statistics
+            - name: KAFKA_URL
+              value: kafka-srv:9092
+            - name: KAFKA_GROUP_ID
+              value: statistics-group
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: statistics-srv
+spec:
+  selector:
+    app: statistics
+  ports:
+    - name: statistics
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
