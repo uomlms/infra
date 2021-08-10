@@ -32,6 +32,22 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
+    - image: uomlms/statistics
+      context: statistics
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+    - image: uomlms/notification
+      context: notification
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
     - image: uomlms/client
       context: client
       docker:
