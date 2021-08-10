@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers: 
+        - name: notification
+          image: uomlms/notification
+          env:
+            # kubectl create secret generic jwt-secret --from-literal=JWT_SECRET=<KEY>
+            - name: JWT_SECRET
+              valueFrom: 
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET
+            # kubectl create secret generic auth-email --from-literal=AUTH_EMAIL=<KEY>
+            - name: AUTH_EMAIL
+              valueFrom: 
+                secretKeyRef:
+                  name: auth-email
+                  key: AUTH_EMAIL
+            # kubectl create secret generic auth-password --from-literal=AUTH_PASSWORD=<KEY>
+            - name: AUTH_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: auth-password
+                  key: AUTH_PASSWORD
+            - name: AUTH_SERVICE
+              value: gmail
+            - name: NO_REPLY_EMAIL
+              value: noreply.uomlms@gmail.com
+            - name: MONGO_URI
+              value: mongodb://notification-mongo-srv:27017/notification
+            - name: KAFKA_URL
+              value: kafka-srv:9092
+            - name: KAFKA_GROUP_ID
+              value: notification-group
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-srv
+spec:
+  selector:
+    app: notification
+  ports:
+    - name: notification
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
